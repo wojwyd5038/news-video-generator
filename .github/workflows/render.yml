@@ -31,7 +31,6 @@ jobs:
       - name: Render Video
         env:
           TITLE: ${{ github.event.client_payload.title }}
-          IMAGE_URL: ${{ github.event.client_payload.image_url }}
         run: |
           python render_video.py
 
