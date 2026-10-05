@@ -3,7 +3,7 @@ import sys
 import json
 from moviepy.editor import TextClip, CompositeVideoClip, ColorClip, AudioFileClip
 
-def create_video(title_text, audio_path, output_path="output.mp4"):
+def create_video(title_text, audio_path, output_path="output_video.mp4"):
     # 1. Wczytanie ścieżki dźwiękowej od OpenAI
     audio = AudioFileClip(audio_path)
     duration = audio.duration
