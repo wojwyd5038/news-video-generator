@@ -1,4 +1,4 @@
-name: Render and Upload Video
+name: render
 
 on:
   repository_dispatch:
@@ -7,33 +7,36 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          pip install moviepy google-api-python-client google-auth-oauthlib
+          python -m pip install --upgrade pip
+          pip install edge-tts moviepy google-api-python-client google-auth-oauthlib google-auth-httplib2
+
+      - name: Generate Audio with Edge-TTS
+        env:
+          SCRIPT_TEXT: ${{ github.event.client_payload.script }}
+        run: |
+          edge-tts --voice pl-PL-MarekNeural --text "$SCRIPT_TEXT" --write-media input_audio.mp3
 
       - name: Render Video
         env:
-          VIDEO_TITLE: ${{ github.event.client_payload.title }}
-          AUDIO_URL: ${{ github.event.client_payload.audio_url }}
+          TITLE: ${{ github.event.client_payload.title }}
+          IMAGE_URL: ${{ github.event.client_payload.image_url }}
         run: |
-          curl -o input_audio.mp3 "$AUDIO_URL"
           python render_video.py
 
       - name: Upload to YouTube
         env:
-          YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
-          VIDEO_TITLE: ${{ github.event.client_payload.title }}
-          VIDEO_DESCRIPTION: ${{ github.event.client_payload.description }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
         run: |
           python upload_to_youtube.py
