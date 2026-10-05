@@ -12,14 +12,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install System Dependencies (ImageMagick)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          # Wyłączenie polityki bezpieczeństwa ImageMagick dla napotkanych ograniczeń renderowania tekstu
+          sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install edge-tts "moviepy<2.0.0" google-api-python-client google-auth-oauthlib google-auth-httplib2
+
       - name: Generate Audio with Edge-TTS
         env:
           SCRIPT_TEXT: ${{ github.event.client_payload.script }}
