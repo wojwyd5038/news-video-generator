@@ -43,6 +43,8 @@ jobs:
 
       - name: Upload to YouTube
         env:
-          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+         YOUTUBE_CREDENTIALS: ${{ secrets.YOUTUBE_CREDENTIALS }}
+         VIDEO_TITLE: ${{ github.event.client_payload.title }}
+         SCRIPT_TEXT: ${{ github.event.client_payload.script }}
         run: |
-          python upload_to_youtube.py
+          python .github/workflows/upload_to_youtube.py
