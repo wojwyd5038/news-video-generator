@@ -11,13 +11,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Install System Dependencies (ImageMagick)
         run: |
           sudo apt-get update
           sudo apt-get install -y imagemagick
-          # Wyłączenie polityki bezpieczeństwa ImageMagick dla napotkanych ograniczeń renderowania tekstu
-          sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || true
+          # Usunięcie restrykcji dotyczących czytania plików tekstowych (@/tmp/...) i praw odczytu/zapisu
+          sudo sed -i 's/<policy domain="path" rights="none" pattern="@\*"/<!-- & -->/' /etc/ImageMagick-6/policy.xml || true
+          sudo sed -i 's/rights="none" pattern="PDF"/rights="read|write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml || truee
 
       - name: Set up Python
         uses: actions/setup-python@v5
