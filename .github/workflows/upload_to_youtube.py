@@ -30,36 +30,29 @@ def upload_video(video_file="output_video.mp4", title="News Video", description=
     # 4. Metadane filmu
     body = {
         "snippet": {
-            "title": title[:100],  # YouTube ogranicza tytuł do 100 znaków
+            "title": title[:100],
             "description": description,
-            "categoryId": "25"     # Kategoria: News & Politics
+            "categoryId": "25"
         },
         "status": {
-            "privacyStatus": "public"  # Opcje: public, unlisted, private
+            "privacyStatus": "public"
         }
     }
 
     # 5. Wszywanie pliku wideo
-  media = MediaFileUpload(video_file, resumable=False, mimetype="video/mp4")
-    
-    print(f"Uploading {video_file} to YouTube...")
+    media = MediaFileUpload(video_file, resumable=False, mimetype="video/mp4")
+
     request = youtube.videos().insert(
         part="snippet,status",
         body=body,
         media_body=media
     )
 
-   response = request.execute()
-
+    response = request.execute()
     print(f"Upload complete! Video ID: {response.get('id')}")
 
 if __name__ == "__main__":
-    # Pobranie tytułu i opisu ze zmiennych środowiskowych przekazanych przez workflow
     video_title = os.environ.get("VIDEO_TITLE", "AI News Update")
     video_description = os.environ.get("SCRIPT_TEXT", "Automated news update.")
-    
-    upload_video(
-        video_file="output_video.mp4",
-        title=video_title,
-        description=video_description
-    )
+
+    upload_video(title=video_title, description=video_description)
