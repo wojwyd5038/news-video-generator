@@ -40,7 +40,7 @@ def upload_video(video_file="output_video.mp4", title="News Video", description=
     }
 
     # 5. Wszywanie pliku wideo
-    media = MediaFileUpload(video_file, chunksize=-1, resumable=True, mimetype="video/mp4")
+  media = MediaFileUpload(video_file, resumable=False, mimetype="video/mp4")
     
     print(f"Uploading {video_file} to YouTube...")
     request = youtube.videos().insert(
@@ -49,11 +49,7 @@ def upload_video(video_file="output_video.mp4", title="News Video", description=
         media_body=media
     )
 
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
-        if status:
-            print(f"Uploaded {int(status.progress() * 100)}%")
+   response = request.execute()
 
     print(f"Upload complete! Video ID: {response.get('id')}")
 
